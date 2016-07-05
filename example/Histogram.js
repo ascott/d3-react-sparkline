@@ -1,8 +1,36 @@
 const d3 = require('d3');
-const React = require('react');
+import React, { PropTypes } from 'React';
 const ReactFauxDOM = require('react-faux-dom');
 
+const propTypes = {
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+};
+
 class Histogram extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      width: props.width,
+      height: props.height,
+    }
+  }
+
+  handleResize() {
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.handleResize.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize.bind(this));
+  }
+
   render() {
     var div = ReactFauxDOM.createElement('div');
 
@@ -10,9 +38,9 @@ class Histogram extends React.Component {
 
     var formatCount = d3.format(",.0f");
 
-    var margin = {top: 10, right: 30, bottom: 30, left: 30},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+    var margin = {top: 40, right: 40, bottom: 40, left: 40};
+    var width = this.state.width - margin.left - margin.right;
+    var height = this.state.height - margin.top - margin.bottom;
 
     var x = d3.scaleLinear()
         .rangeRound([0, width]);
@@ -58,5 +86,7 @@ class Histogram extends React.Component {
     return div.toReact();
   }
 };
+
+Histogram.propTypes = propTypes;
 
 export default Histogram;
